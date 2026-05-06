@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">用户登录 - 校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .login-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .login-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            background-color: white;
+            padding: 2.5rem;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-logo {
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .login-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-subtitle {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-login {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .btn-login:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-right: none;
+        }
+        
+        .input-group .form-control {
+            border-left: none;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .forgot-password a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .back-home {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .back-home a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-home a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- 头部 -->
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <h2 class="login-title">用户登录</h2>
+                <p class="login-subtitle">欢迎回到校园失物招领平台</p>
+            </div>
+            
+            <!-- 错误提示区域 -->
+            <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+            <div id="successAlert" class="alert alert-success d-none" role="alert"></div>
+            
+            <!-- 登录表单 -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user-graduate me-1"></i>学号
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               placeholder="请输入您的学号" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock me-1"></i>密码
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="请输入密码" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input class="form-check-input" type="checkbox" id="rememberMe">
+                        <label class="form-check-label ms-2" for="rememberMe">
+                            记住我
+                        </label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#" id="forgotPasswordLink">忘记密码？</a>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-login" id="loginBtn">
+                    <span id="loginText">立即登录</span>
+                    <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </form>
+            
+            <!-- 注册链接 -->
+            <div class="register-link">
+                还没有账号？ <a th:href="@{/user/register}">立即注册</a>
+            </div>
+            
+            <!-- 返回首页 -->
+            <div class="back-home">
+                <a th:href="@{/}"><i class="fas fa-home me-1"></i>返回首页</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 忘记密码模态框 -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">忘记密码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>请联系系统管理员重置密码：</p>
+                    <ul>
+                        <li>邮箱：admin@campus.edu</li>
+                        <li>电话：010-12345678</li>
+                        <li>办公地点：校园信息中心</li>
+                    </ul>
+                    <p class="text-muted">请携带学生证或身份证前往办理。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery（简化AJAX操作） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // 切换密码显示
+            $('#togglePassword').click(function() {
+                const passwordInput = $('#password');
+                const icon = $(this).find('i');
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+            
+            // 忘记密码链接
+            $('#forgotPasswordLink').click(function(e) {
+                e.preventDefault();
+                $('#forgotPasswordModal').modal('show');
+            });
+            
+            // 检查URL参数，显示注册成功提示
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('registered')) {
+                showSuccess('注册成功！请使用您的学号登录');
+            }
+            if (urlParams.has('logout')) {
+                showSuccess('已成功退出登录');
+            }
+            
+            // 检查是否已保存用户名
+            const savedUsername = localStorage.getItem('rememberedUsername');
+            if (savedUsername) {
+                $('#username').val(savedUsername);
+                $('#rememberMe').prop('checked', true);
+            }
+            
+            // 表单提交
+            $('#loginForm').submit(function(e) {
+                e.preventDefault();
+                
+                // 显示加载状态
+                const loginBtn = $('#loginBtn');
+                const loginText = $('#loginText');
+                const loginSpinner = $('#loginSpinner');
+                
+                loginBtn.prop('disabled', true);
+                loginText.text('登录中...');
+                loginSpinner.removeClass('d-none');
+                
+                // 收集表单数据
+                const formData = {
+                    username: $('#username').val().trim(),
+                    password: $('#password').val()
+                };
+                
+                // 记住用户名
+                if ($('#rememberMe').is(':checked')) {
+                    localStorage.setItem('rememberedUsername', formData.username);
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                }
+                
+                // 发送登录请求
+                $.ajax({
+                    url: '/user/login',
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            showSuccess('登录成功！正在跳转到首页...');
+                            // 2秒后跳转到首页
+                            setTimeout(function() {
+                                window.location.href = '/';
+                            }, 1500);
+                        } else {
+                            showError(response.message || '登录失败，请稍后重试');
+                            resetLoginButton();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showError('网络错误，请检查网络连接');
+                        resetLoginButton();
+                    }
+                });
+                
+                function resetLoginButton() {
+                    loginBtn.prop('disabled', false);
+                    loginText.text('立即登录');
+                    loginSpinner.addClass('d-none');
+                }
+            });
+            
+            // 显示错误信息
+            function showError(message) {
+                $('#successAlert').addClass('d-none');
+                $('#errorAlert').removeClass('d-none').text(message);
+                $('#errorAlert')[0].scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // 显示成功信息
+            function showSuccess(message) {
+                $('#errorAlert').addClass('d-none');
+                $('#successAlert').removeClass('d-none').text(message);
+                $('#successAlert')[0].scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>

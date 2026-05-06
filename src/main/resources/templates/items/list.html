@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">失物招领 - 校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .items-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .filter-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background-color: white;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+        }
+        
+        .filter-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f8f9fc;
+            padding-bottom: 0.5rem;
+        }
+        
+        .item-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            background-color: white;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .item-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .item-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            margin-right: 0.5rem;
+        }
+        
+        .badge-lost {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+        
+        .badge-found {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+        
+        .badge-type {
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .badge-resolved {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+        }
+        
+        .item-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .item-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .item-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .item-body {
+            padding: 1.5rem;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        .item-info i {
+            width: 20px;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .item-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            max-height: 4.8em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .item-footer {
+            padding: 1rem 1.5rem;
+            background-color: #f8f9fc;
+            border-top: 1px solid #e3e6f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .item-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        .stat-item i {
+            margin-right: 0.25rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--secondary-color);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #e3e6f0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-text {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .pagination-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .page-link {
+            color: var(--primary-color);
+            border: 1px solid #e3e6f0;
+            margin: 0 0.25rem;
+            border-radius: 0.5rem;
+        }
+        
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .page-link:hover {
+            color: #224abe;
+            background-color: #f8f9fc;
+            border-color: #e3e6f0;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-input {
+            border-radius: 2rem;
+            padding-left: 3rem;
+            border: 2px solid #e3e6f0;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <i class="fas fa-search me-2"></i>校园失物招领
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/items">失物招领</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">关于我们</a>
+                    </li>
+                    <!-- 根据登录状态显示不同菜单 -->
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/items/publish">
+                            <i class="fas fa-plus me-1"></i>发布
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/items/my">
+                            <i class="fas fa-list me-1"></i>我的发布
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/profile">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${nickname}">用户</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/logout">退出登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/login">登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/register">注册</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="items-container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">失物招领</h1>
+                    <p class="page-subtitle">寻找失物，传递温暖，共建和谐校园</p>
+                </div>
+                <div th:if="${isLoggedIn}">
+                    <a href="/items/publish" class="btn btn-light">
+                        <i class="fas fa-plus me-2"></i>发布信息
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 筛选区域 -->
+        <div class="filter-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <form action="/items/search" method="get" class="d-flex">
+                            <input type="text" name="keyword" class="form-control search-input" 
+                                   placeholder="搜索物品标题、描述或特征..." th:value="${keyword}">
+                            <button type="submit" class="btn btn-primary ms-2" style="border-radius: 2rem;">
+                                <i class="fas fa-search me-1"></i>搜索
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <a href="/items" class="btn btn-outline-primary" 
+                           th:classappend="${publishType == null} ? 'active' : ''">
+                            全部
+                        </a>
+                        <a href="/items?publishType=0" class="btn btn-outline-primary" 
+                           th:classappend="${publishType == 0} ? 'active' : ''">
+                            丢失
+                        </a>
+                        <a href="/items?publishType=1" class="btn btn-outline-primary" 
+                           th:classappend="${publishType == 1} ? 'active' : ''">
+                            捡到
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 物品类型筛选 -->
+            <div class="mt-3">
+                <div class="filter-title">物品类型</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/items" th:if="${publishType != null}"
+                       th:href="@{/items(publishType=${publishType})}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == null} ? 'active' : ''">
+                        全部类型
+                    </a>
+                    <a href="/items" th:if="${publishType == null}"
+                       th:href="@{/items}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == null} ? 'active' : ''">
+                        全部类型
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=1)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 1} ? 'active' : ''">
+                        证件
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=2)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 2} ? 'active' : ''">
+                        钥匙
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=3)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 3} ? 'active' : ''">
+                        电子设备
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=4)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 4} ? 'active' : ''">
+                        衣物
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=5)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 5} ? 'active' : ''">
+                        钱包
+                    </a>
+                    <a th:href="@{/items(publishType=${publishType}, itemType=6)}"
+                       class="btn btn-sm btn-outline-secondary"
+                       th:classappend="${itemType == 6} ? 'active' : ''">
+                        其他
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 物品列表 -->
+        <div th:if="${not items.empty}">
+            <div th:each="item : ${items}" class="item-card">
+                <div class="item-header">
+                    <div class="d-flex align-items-center">
+                        <span class="item-badge" 
+                              th:classappend="${item.publishType == 0} ? 'badge-lost' : 'badge-found'"
+                              th:text="${item.publishType == 0} ? '丢失' : '捡到'">
+                            丢失
+                        </span>
+                        <span class="item-badge badge-type" 
+                              th:text="${itemTypeMap.get(item.itemType)}">
+                            证件
+                        </span>
+                        <span th:if="${item.status == 1}" class="item-badge badge-resolved">
+                            已处理
+                        </span>
+                    </div>
+                    <h3 class="item-title">
+                        <a th:href="@{/items/{id}(id=${item.itemId})}" th:text="${item.title}">
+                            物品标题
+                        </a>
+                    </h3>
+                </div>
+                
+                <div class="item-body">
+                    <div class="item-info">
+                        <i class="fas fa-user"></i>
+                        <span th:text="${item.publisherName}">发布人</span>
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span th:text="${item.location}">地点</span>
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-clock"></i>
+                        <span th:text="${#temporals.format(item.eventTime, 'yyyy-MM-dd HH:mm')}">
+                            时间
+                        </span>
+                    </div>
+                    
+                    <div class="item-description" th:text="${item.description}">
+                        物品描述内容...
+                    </div>
+                    
+                    <div th:if="${item.features != null and not item.features.isEmpty()}">
+                        <small class="text-muted">
+                            <i class="fas fa-tag me-1"></i>
+                            特征：<span th:text="${item.features}">物品特征</span>
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="item-footer">
+                    <div class="item-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-eye"></i>
+                            <span th:text="${item.viewCount}">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-heart"></i>
+                            <span th:text="${item.collectCount}">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-comment"></i>
+                            <span th:text="${item.commentCount}">0</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:href="@{/items/{id}(id=${item.itemId})}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-info-circle me-1"></i>查看详情
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div th:if="${items.empty}" class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3 class="empty-title">暂无物品信息</h3>
+            <p class="empty-text">
+                还没有人发布失物或招领信息，您可以成为第一个发布者！
+            </p>
+            <a href="/items/publish" class="btn btn-primary" th:if="${isLoggedIn}">
+                <i class="fas fa-plus me-2"></i>立即发布
+            </a>
+            <a href="/user/login" class="btn btn-primary" th:unless="${isLoggedIn}">
+                <i class="fas fa-sign-in-alt me-2"></i>登录后发布
+            </a>
+        </div>
+        
+        <!-- 分页 -->
+        <div th:if="${not items.empty}" class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <!-- 上一页 -->
+                    <li class="page-item" th:classappend="${pageInfo.isFirstPage} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/items(page=${pageInfo.prePage}, size=${pageInfo.pageSize}, publishType=${publishType}, itemType=${itemType})}"
+                           aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    
+                    <!-- 页码 -->
+                    <li th:each="pageNum : ${pageInfo.navigatepageNums}" class="page-item"
+                        th:classappend="${pageInfo.pageNum == pageNum} ? 'active' : ''">
+                        <a class="page-link" 
+                           th:href="@{/items(page=${pageNum}, size=${pageInfo.pageSize}, publishType=${publishType}, itemType=${itemType})}"
+                           th:text="${pageNum}">
+                            1
+                        </a>
+                    </li>
+                    
+                    <!-- 下一页 -->
+                    <li class="page-item" th:classappend="${pageInfo.isLastPage} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/items(page=${pageInfo.nextPage}, size=${pageInfo.pageSize}, publishType=${publishType}, itemType=${itemType})}"
+                           aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <p class="text-center text-muted mt-2">
+                共 <span th:text="${pageInfo.total}">0</span> 条记录，
+                第 <span th:text="${pageInfo.pageNum}">1</span> / <span th:text="${pageInfo.pages}">1</span> 页
+            </p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery（简化AJAX操作） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            console.log('失物招领列表页面已加载');
+            
+            // 物品卡片悬停效果
+            $('.item-card').hover(
+                function() {
+                    $(this).css('box-shadow', '0 0.5rem 2rem rgba(0, 0, 0, 0.15)');
+                },
+                function() {
+                    $(this).css('box-shadow', '0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1)');
+                }
+            );
+            
+            // 搜索框自动聚焦
+            $('.search-input').focus();
+            
+            // 筛选按钮激活状态
+            $('.btn-outline-primary').on('click', function() {
+                $('.btn-outline-primary').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+    </script>
+</body>
+</html>

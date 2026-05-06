@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">关于我们 - 校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .about-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .about-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .about-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .about-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .about-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background-color: white;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .about-card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .about-card-body {
+            padding: 1.5rem;
+        }
+        
+        .mission-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .mission-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(78, 115, 223, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .mission-content h5 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .team-member {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            background-color: #f8f9fc;
+            transition: transform 0.3s;
+        }
+        
+        .team-member:hover {
+            transform: translateY(-5px);
+        }
+        
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: white;
+            border: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 auto 1rem;
+        }
+        
+        .member-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .member-role {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-info {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .contact-info li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-info i {
+            width: 20px;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .btn-back {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        
+        .btn-back:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <i class="fas fa-search me-2"></i>校园失物招领
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/items">失物招领</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">关于我们</a>
+                    </li>
+                    <!-- 根据登录状态显示不同菜单 -->
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/profile">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${nickname}">用户</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/logout">退出登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/login">登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/register">注册</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="about-container">
+        <!-- 页面头部 -->
+        <div class="about-header">
+            <h1 class="about-title">关于我们</h1>
+            <p class="about-subtitle">让校园失物更快回家，传递爱心与温暖</p>
+        </div>
+        
+        <!-- 平台使命 -->
+        <div class="about-card">
+            <div class="about-card-header">
+                <i class="fas fa-bullseye me-2"></i>平台使命
+            </div>
+            <div class="about-card-body">
+                <div class="mission-item">
+                    <div class="mission-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h5>连接失主与拾主</h5>
+                        <p>为校园内的失物招领搭建便捷的沟通桥梁，让丢失的物品能够更快地回到主人身边。</p>
+                    </div>
+                </div>
+                
+                <div class="mission-item">
+                    <div class="mission-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h5>保障信息安全</h5>
+                        <p>保护用户隐私，提供安全可靠的信息发布环境，防止个人信息泄露和滥用。</p>
+                    </div>
+                </div>
+                
+                <div class="mission-item">
+                    <div class="mission-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h5>传递校园温暖</h5>
+                        <p>弘扬校园正能量，培养同学们的互助精神，营造温馨和谐的校园氛围。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 我们的团队 -->
+        <div class="about-card">
+            <div class="about-card-header">
+                <i class="fas fa-users me-2"></i>我们的团队
+            </div>
+            <div class="about-card-body">
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="member-name">张老师</div>
+                        <div class="member-role">项目指导老师</div>
+                        <p class="small">负责项目整体规划和技术指导，具有多年软件工程教学经验。</p>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="member-name">开发团队</div>
+                        <div class="member-role">软件开发组</div>
+                        <p class="small">由计算机专业的同学组成，负责平台的设计、开发和维护工作。</p>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="member-avatar">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="member-name">运营团队</div>
+                        <div class="member-role">内容与用户支持</div>
+                        <p class="small">负责平台日常运营、内容审核和用户服务工作，确保平台良好运行。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 联系我们 -->
+        <div class="about-card">
+            <div class="about-card-header">
+                <i class="fas fa-envelope me-2"></i>联系我们
+            </div>
+            <div class="about-card-body">
+                <ul class="contact-info">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>办公地址：校园信息中心 3楼 301室</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>联系电话：010-12345678</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>电子邮箱：lostfound@campus.edu</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>服务时间：周一至周五 8:30-17:30</span>
+                    </li>
+                </ul>
+                
+                <p class="mt-3">
+                    如果您在使用平台过程中遇到任何问题，或有任何建议和反馈，欢迎随时与我们联系。
+                    我们将竭诚为您服务，不断完善平台功能，提升用户体验。
+                </p>
+            </div>
+        </div>
+        
+        <!-- 返回按钮 -->
+        <div class="text-center">
+            <a href="/" class="btn btn-back">
+                <i class="fas fa-arrow-left me-1"></i>返回首页
+            </a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery（简化AJAX操作） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // 简单的页面交互
+            console.log('关于页面已加载');
+            
+            // 团队成员卡片悬停效果
+            $('.team-member').hover(
+                function() {
+                    $(this).css('box-shadow', '0 0.5rem 1rem rgba(0, 0, 0, 0.15)');
+                },
+                function() {
+                    $(this).css('box-shadow', 'none');
+                }
+            );
+        });
+    </script>
+</body>
+</html>

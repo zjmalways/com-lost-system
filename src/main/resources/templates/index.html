@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --light-color: #f8f9fc;
+            --dark-color: #5a5c69;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 1rem 1rem;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .stat-card {
+            border-left: 0.25rem solid var(--primary-color);
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+        
+        footer {
+            background-color: #2e3a4d;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <i class="fas fa-search me-2"></i>校园失物招领
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/items">失物招领</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">关于我们</a>
+                    </li>
+                    <!-- 根据登录状态显示不同菜单 -->
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/profile">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${nickname}">用户</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/logout">退出登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/login">登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/register">注册</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">校园失物招领平台</h1>
+            <p class="lead mb-4">专门解决校园里丢失饭卡、钥匙、耳机、书本、证件等高频问题，让失物更快回家</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/items/lost" class="btn btn-light btn-lg">
+                    <i class="fas fa-search me-2"></i>我丢了东西
+                </a>
+                <a href="/items/found" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-hand-holding-heart me-2"></i>我捡到东西
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 统计数据 -->
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5 class="text-primary">已发布信息</h5>
+                    <h2 class="fw-bold" th:text="${totalItems != null ? #numbers.formatInteger(totalItems, 0) : '0'}">0</h2>
+                    <p class="text-muted">条失物招领信息</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5 class="text-success">成功找回</h5>
+                    <h2 class="fw-bold" th:text="${resolvedItems != null ? #numbers.formatInteger(resolvedItems, 0) : '0'}">0</h2>
+                    <p class="text-muted">件物品已物归原主</p>
+                    <p class="small text-success mt-1 mb-0" th:if="${recoveryRate != null && recoveryRate > 0}">
+                        找回率：<span th:text="${#numbers.formatDecimal(recoveryRate, 1, 1)}">0</span>%
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5 class="text-info">注册用户</h5>
+                    <h2 class="fw-bold" th:text="${totalUsers != null ? #numbers.formatInteger(totalUsers, 0) : '0'}">0</h2>
+                    <p class="text-muted">位同学正在使用</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <h5 class="text-warning">平均时间</h5>
+                    <h2 class="fw-bold" th:text="${avgRecoveryTime != null ? #numbers.formatDecimal(avgRecoveryTime, 1, 1) : '0.0'}">0.0</h2>
+                    <p class="text-muted">天内找回物品</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能介绍 -->
+        <h2 class="text-center mb-5">平台特色功能</h2>
+        <div class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary text-white">
+                            <i class="fas fa-bullhorn fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">快速发布</h4>
+                        <p class="card-text">简单易用的发布界面，支持图片上传，快速发布丢失或捡到信息。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success text-white">
+                            <i class="fas fa-search fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">智能搜索</h4>
+                        <p class="card-text">按类型、地点、时间等多维度筛选，快速找到匹配的物品信息。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info text-white">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">即时沟通</h4>
+                        <p class="card-text">内置留言系统，无需公开联系方式，保护隐私的同时方便沟通。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作指引 -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <h3>如何使用平台？</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <h5><i class="fas fa-user-plus text-primary me-2"></i>注册账号</h5>
+                        <p>使用学号注册账号，完善个人信息。</p>
+                    </li>
+                    <li class="mb-3">
+                        <h5><i class="fas fa-edit text-success me-2"></i>发布信息</h5>
+                        <p>如实填写物品信息，上传清晰图片。</p>
+                    </li>
+                    <li class="mb-3">
+                        <h5><i class="fas fa-bell text-warning me-2"></i>等待通知</h5>
+                        <p>系统会智能匹配相似信息，及时通知您。</p>
+                    </li>
+                    <li>
+                        <h5><i class="fas fa-handshake text-danger me-2"></i>物归原主</h5>
+                        <p>联系对方确认物品，完成交接后更新状态。</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1581276879432-15e50529f34b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                     class="img-fluid rounded shadow" alt="校园失物招领">
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-search me-2"></i>校园失物招领平台</h5>
+                    <p class="mt-3">专门解决校园失物问题，让爱心传递，让失物回家。</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>快速链接</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/items" class="text-light text-decoration-none">失物招领</a></li>
+                        <li><a href="/about" class="text-light text-decoration-none">关于我们</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">使用帮助</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>联系我们</h5>
+                    <p>
+                        <i class="fas fa-map-marker-alt me-2"></i>校园信息中心<br>
+                        <i class="fas fa-phone me-2"></i>010-12345678<br>
+                        <i class="fas fa-envelope me-2"></i>lostfound@campus.edu
+                    </p>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center pt-3">
+                <p>&copy; 2026 校园失物招领平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 自定义JS -->
+    <script>
+        // 简单的页面交互
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('校园失物招领平台已加载');
+            
+            // 统计数字动画效果
+            const statCards = document.querySelectorAll('.stat-card h2');
+            statCards.forEach(card => {
+                const finalValue = parseInt(card.textContent);
+                let startValue = 0;
+                const duration = 2000;
+                const increment = finalValue / (duration / 16);
+                
+                const timer = setInterval(() => {
+                    startValue += increment;
+                    if (startValue >= finalValue) {
+                        card.textContent = finalValue.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        card.textContent = Math.floor(startValue).toLocaleString();
+                    }
+                }, 16);
+            });
+        });
+    </script>
+</body>
+</html>

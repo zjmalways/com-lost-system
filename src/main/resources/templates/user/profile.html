@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">个人中心 - 校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .profile-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background-color: #f8f9fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-username {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .profile-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background-color: white;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .profile-card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .profile-card-body {
+            padding: 1.5rem;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-label {
+            width: 120px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #333;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-edit {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+        }
+        
+        .btn-change-password {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+            color: white;
+        }
+        
+        .btn-change-password:hover {
+            background-color: #2a96a5;
+            border-color: #2a96a5;
+        }
+        
+        .btn-logout {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-logout:hover {
+            background-color: #c62828;
+            border-color: #c62828;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f8f9fc;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        .alert {
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .edit-form {
+            display: none;
+        }
+        
+        .form-control {
+            border-radius: 0.5rem;
+        }
+        
+        .btn-save, .btn-cancel {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .btn-save {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <i class="fas fa-search me-2"></i>校园失物招领
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/items">失物招领</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/user/profile">个人中心</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">退出登录</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="profile-container">
+        <!-- 成功/错误提示 -->
+        <div id="successAlert" class="alert alert-success d-none" role="alert"></div>
+        <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+        
+        <!-- 个人资料头部 -->
+        <div class="profile-header">
+            <div class="profile-avatar" th:if="${user.avatar}">
+                <img th:src="${user.avatar}" alt="头像" style="width: 100%; height: 100%; border-radius: 50%;">
+            </div>
+            <div class="profile-avatar" th:unless="${user.avatar}">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1 class="profile-name" th:text="${user.nickname}">用户昵称</h1>
+            <div class="profile-username">
+                <i class="fas fa-user-graduate me-1"></i>
+                <span th:text="${user.username}">学号</span>
+                <span class="ms-3" th:if="${user.role == 1}">
+                    <span class="badge bg-warning">管理员</span>
+                </span>
+            </div>
+        </div>
+        
+        <!-- 基本信息卡片 -->
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <span><i class="fas fa-id-card me-2"></i>基本信息</span>
+                <button class="btn btn-sm btn-outline-primary" id="editProfileBtn">
+                    <i class="fas fa-edit me-1"></i>编辑
+                </button>
+            </div>
+            <div class="profile-card-body">
+                <!-- 查看模式 -->
+                <div id="viewMode">
+                    <div class="info-item">
+                        <div class="info-label">学号</div>
+                        <div class="info-value" th:text="${user.username}">20230001</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">姓名/昵称</div>
+                        <div class="info-value" th:text="${user.nickname}">张三</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">联系方式</div>
+                        <div class="info-value" th:text="${user.contact ?: '未设置'}">13800138000</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">用户角色</div>
+                        <div class="info-value">
+                            <span th:if="${user.role == 0}">普通用户</span>
+                            <span th:if="${user.role == 1}" class="text-warning fw-bold">管理员</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">注册时间</div>
+                        <div class="info-value" th:text="${#temporals.format(user.createTime, 'yyyy-MM-dd HH:mm:ss')}">2026-04-17 10:00:00</div>
+                    </div>
+                </div>
+                
+                <!-- 编辑模式 -->
+                <div id="editMode" class="edit-form">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label for="editNickname" class="form-label">姓名/昵称</label>
+                            <input type="text" class="form-control" id="editNickname" 
+                                   th:value="${user.nickname}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editContact" class="form-label">联系方式</label>
+                            <input type="text" class="form-control" id="editContact" 
+                                   th:value="${user.contact}">
+                            <div class="form-text">请填写手机号或微信号</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAvatar" class="form-label">头像URL</label>
+                            <input type="text" class="form-control" id="editAvatar" 
+                                   th:value="${user.avatar}">
+                            <div class="form-text">请输入头像图片的网络地址</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-save" id="saveProfileBtn">
+                                <span id="saveText">保存</span>
+                                <span id="saveSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                            </button>
+                            <button type="button" class="btn btn-cancel" id="cancelEditBtn">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <a th:href="@{/user/change-password}" class="btn btn-action btn-change-password">
+                <i class="fas fa-key me-2"></i>修改密码
+            </a>
+            <a th:href="@{/user/logout}" class="btn btn-action btn-logout">
+                <i class="fas fa-sign-out-alt me-2"></i>退出登录
+            </a>
+        </div>
+        
+        <!-- 统计数据（预留） -->
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <span><i class="fas fa-chart-bar me-2"></i>我的统计</span>
+            </div>
+            <div class="profile-card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">发布的失物</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">发布的招领</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">已找回/归还</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">收到的评论</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery（简化AJAX操作） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // 切换编辑模式
+            $('#editProfileBtn').click(function() {
+                $('#viewMode').hide();
+                $('#editMode').show();
+                $(this).hide();
+            });
+            
+            $('#cancelEditBtn').click(function() {
+                $('#editMode').hide();
+                $('#viewMode').show();
+                $('#editProfileBtn').show();
+            });
+            
+            // 保存个人资料
+            $('#editProfileForm').submit(function(e) {
+                e.preventDefault();
+                
+                // 显示加载状态
+                const saveBtn = $('#saveProfileBtn');
+                const saveText = $('#saveText');
+                const saveSpinner = $('#saveSpinner');
+                
+                saveBtn.prop('disabled', true);
+                saveText.text('保存中...');
+                saveSpinner.removeClass('d-none');
+                
+                // 收集表单数据
+                const formData = {
+                    nickname: $('#editNickname').val().trim(),
+                    contact: $('#editContact').val().trim(),
+                    avatar: $('#editAvatar').val().trim()
+                };
+                
+                // 发送更新请求
+                $.ajax({
+                    url: '/user/update',
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            showSuccess('个人资料更新成功！');
+                            // 更新页面显示
+                            location.reload();
+                        } else {
+                            showError(response.message || '更新失败，请稍后重试');
+                            saveBtn.prop('disabled', false);
+                            saveText.text('保存');
+                            saveSpinner.addClass('d-none');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showError('网络错误，请检查网络连接');
+                        saveBtn.prop('disabled', false);
+                        saveText.text('保存');
+                        saveSpinner.addClass('d-none');
+                    }
+                });
+            });
+            
+            // 显示成功信息
+            function showSuccess(message) {
+                $('#errorAlert').addClass('d-none');
+                $('#successAlert').removeClass('d-none').text(message);
+                setTimeout(() => {
+                    $('#successAlert').addClass('d-none');
+                }, 3000);
+            }
+            
+            // 显示错误信息
+            function showError(message) {
+                $('#successAlert').addClass('d-none');
+                $('#errorAlert').removeClass('d-none').text(message);
+                setTimeout(() => {
+                    $('#errorAlert').addClass('d-none');
+                }, 3000);
+            }
+            
+            // 检查URL参数，显示操作结果
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('updated')) {
+                showSuccess('个人资料更新成功！');
+            }
+            if (urlParams.has('passwordChanged')) {
+                showSuccess('密码修改成功！');
+            }
+        });
+    </script>
+</body>
+</html>

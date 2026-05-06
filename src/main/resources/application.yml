@@ -1,0 +1,57 @@
+# 服务器配置
+server:
+  port: 8081
+
+# Spring配置
+spring:
+  # Oracle数据库配置
+  # 请根据实际情况修改以下配置
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: system
+    password: zjmgzh
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # 静态资源缓存时间
+  # Thymeleaf配置
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+  web:
+    resources:
+      static-locations: classpath:/static/,file:${file.upload-dir}
+      cache:
+        period: 3600
+
+# MyBatis配置
+mybatis:
+  type-aliases-package: com.campus.lostfound.entity
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# PageHelper分页插件配置
+pagehelper:
+  helper-dialect: oracle
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 文件上传配置
+file:
+  upload-dir: D:/upload/campus-lost-found
+  access-path: /upload/**
+
+# 日志配置
+logging:
+  level:
+    com.campus.lostfound.mapper: debug

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">编辑信息 - 校园失物招领平台</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6c757d;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .edit-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .edit-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background-color: white;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            padding: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f8f9fc;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e3e6f0;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .form-text {
+            color: var(--secondary-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .type-option {
+            border: 2px solid #e3e6f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .type-option:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .type-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.1);
+        }
+        
+        .type-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .type-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: #224abe;
+            border-color: #224abe;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            padding: 0.75rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d52a1b;
+            border-color: #d52a1b;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e3e6f0;
+        }
+        
+        .alert {
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+        
+        .alert-success {
+            background-color: rgba(28, 200, 138, 0.1);
+            color: var(--success-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(231, 74, 59, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .char-count {
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--secondary-color);
+            margin-top: 0.25rem;
+        }
+        
+        .char-count.warning {
+            color: var(--warning-color);
+        }
+        
+        .char-count.danger {
+            color: var(--danger-color);
+        }
+        
+        .location-input {
+            position: relative;
+        }
+        
+        .location-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            z-index: 10;
+        }
+        
+        .location-input .form-control {
+            padding-left: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/">
+                <i class="fas fa-search me-2"></i>校园失物招领
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/items">失物招领</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">关于我们</a>
+                    </li>
+                    <!-- 根据登录状态显示不同菜单 -->
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/items/publish">
+                            <i class="fas fa-plus me-1"></i>发布
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link active" href="/items/my">
+                            <i class="fas fa-list me-1"></i>我的发布
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/profile">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${nickname}">用户</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isLoggedIn}">
+                        <a class="nav-link" href="/user/logout">退出登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/login">登录</a>
+                    </li>
+                    <li class="nav-item" th:unless="${isLoggedIn}">
+                        <a class="nav-link" href="/user/register">注册</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="edit-container">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <h1 class="page-title">编辑信息</h1>
+            <p class="page-subtitle">更新物品信息，保持信息准确</p>
+        </div>
+        
+        <!-- 编辑表单 -->
+        <div class="edit-card">
+            <div class="card-header">
+                <i class="fas fa-edit me-2"></i>修改物品信息
+            </div>
+            <div class="card-body">
+                <!-- 消息提示 -->
+                <div id="messageAlert" class="alert d-none"></div>
+                
+                <form id="editForm">
+                    <input type="hidden" id="itemId" name="itemId" th:value="${item.itemId}">
+                    
+                    <!-- 物品类型 -->
+                    <div class="form-section">
+                        <div class="section-title">物品类型</div>
+                        <div class="type-grid" id="itemTypeGrid">
+                            <div class="type-option" data-type="1">
+                                <div class="type-icon">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <div class="type-name">证件</div>
+                            </div>
+                            
+                            <div class="type-option" data-type="2">
+                                <div class="type-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="type-name">钥匙</div>
+                            </div>
+                            
+                            <div class="type-option" data-type="3">
+                                <div class="type-icon">
+                                    <i class="fas fa-laptop"></i>
+                                </div>
+                                <div class="type-name">电子设备</div>
+                            </div>
+                            
+                            <div class="type-option" data-type="4">
+                                <div class="type-icon">
+                                    <i class="fas fa-tshirt"></i>
+                                </div>
+                                <div class="type-name">衣物</div>
+                            </div>
+                            
+                            <div class="type-option" data-type="5">
+                                <div class="type-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="type-name">钱包</div>
+                            </div>
+                            
+                            <div class="type-option" data-type="6">
+                                <div class="type-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="type-name">其他</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="itemType" name="itemType" th:value="${item.itemType}" required>
+                    </div>
+                    
+                    <!-- 物品标题 -->
+                    <div class="form-section">
+                        <label for="title" class="form-label required">物品标题</label>
+                        <input type="text" id="title" name="title" class="form-control" 
+                               th:value="${item.title}" required maxlength="100">
+                        <div class="char-count" id="titleCharCount">0/100</div>
+                        <div class="form-text">简明扼要地描述物品，建议包含关键特征</div>
+                    </div>
+                    
+                    <!-- 物品描述 -->
+                    <div class="form-section">
+                        <label for="description" class="form-label">详细描述</label>
+                        <textarea id="description" name="description" class="form-control" 
+                                  rows="4" placeholder="请详细描述物品的外观、品牌、型号、特殊标记等信息..."
+                                  maxlength="1000" th:text="${item.description}"></textarea>
+                        <div class="char-count" id="descriptionCharCount">0/1000</div>
+                        <div class="form-text">详细描述有助于更快匹配到失主/拾主</div>
+                    </div>
+                    
+                    <!-- 物品特征 -->
+                    <div class="form-section">
+                        <label for="features" class="form-label">物品特征</label>
+                        <input type="text" id="features" name="features" class="form-control" 
+                               placeholder="例如：红色外壳、有划痕、有挂饰" maxlength="200"
+                               th:value="${item.features}">
+                        <div class="char-count" id="featuresCharCount">0/200</div>
+                        <div class="form-text">用简短的关键词描述物品的显著特征</div>
+                    </div>
+                    
+                    <!-- 地点和时间 -->
+                    <div class="form-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="location" class="form-label required">地点</label>
+                                <div class="location-input">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="location" name="location" class="form-control" 
+                                           th:value="${item.location}" required>
+                                </div>
+                                <div class="form-text">请尽量提供具体地点</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="eventTime" class="form-label required">时间</label>
+                                <input type="datetime-local" id="eventTime" name="eventTime" 
+                                       class="form-control" th:value="${formattedEventTime}" required>
+                                <div class="form-text">丢失或捡到的大致时间</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 存放地点 -->
+                    <div class="form-section">
+                        <label for="storageLocation" class="form-label">存放地点</label>
+                        <input type="text" id="storageLocation" name="storageLocation" class="form-control" 
+                               placeholder="例如：保卫处办公室、宿舍楼值班室"
+                               th:value="${item.storageLocation}">
+                        <div class="form-text">捡到的物品当前存放的地点（仅招领信息有效）</div>
+                    </div>
+                    
+                    <!-- 联系方式 -->
+                    <div class="form-section">
+                        <label for="contact" class="form-label">联系方式</label>
+                        <input type="text" id="contact" name="contact" class="form-control" 
+                               placeholder="例如：手机号码、微信、QQ等"
+                               th:value="${item.contact}">
+                        <div class="form-text">用于失主/拾主联系您，请谨慎填写</div>
+                    </div>
+                    
+                    <!-- 表单操作 -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline-primary" onclick="window.history.back()">
+                            <i class="fas fa-times me-2"></i>取消
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>保存修改
+                        </button>
+                        <button type="button" class="btn btn-danger" id="deleteBtn">
+                            <i class="fas fa-trash me-2"></i>删除
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery（简化AJAX操作） -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            console.log('编辑页面已加载');
+            
+            // 初始化字符计数器
+            $('#title').on('input', updateCharCount);
+            $('#description').on('input', updateCharCount);
+            $('#features').on('input', updateCharCount);
+            
+            function updateCharCount() {
+                const $input = $(this);
+                const maxLength = parseInt($input.attr('maxlength'));
+                const currentLength = $input.val().length;
+                const $counter = $('#' + $input.attr('id') + 'CharCount');
+                
+                $counter.text(currentLength + '/' + maxLength);
+                
+                if (currentLength > maxLength * 0.9) {
+                    $counter.addClass('warning');
+                } else if (currentLength > maxLength) {
+                    $counter.addClass('danger');
+                } else {
+                    $counter.removeClass('warning danger');
+                }
+            }
+            
+            // 触发初始计数
+            $('#title').trigger('input');
+            $('#description').trigger('input');
+            $('#features').trigger('input');
+            
+            // 物品类型选择
+            $('.type-option').on('click', function() {
+                $('.type-option').removeClass('selected');
+                $(this).addClass('selected');
+                const itemType = $(this).data('type');
+                $('#itemType').val(itemType);
+            });
+            
+            // 设置当前选中的物品类型
+            const currentItemType = $('#itemType').val();
+            $(`.type-option[data-type="${currentItemType}"]`).addClass('selected');
+            
+            // 表单提交
+            $('#editForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // 禁用提交按钮，防止重复提交
+                $('#submitBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>保存中...');
+                
+                // 收集表单数据
+                const formData = {
+                    itemId: $('#itemId').val(),
+                    title: $('#title').val().trim(),
+                    description: $('#description').val().trim(),
+                    features: $('#features').val().trim(),
+                    location: $('#location').val().trim(),
+                    eventTime: $('#eventTime').val(),
+                    storageLocation: $('#storageLocation').val().trim(),
+                    contact: $('#contact').val().trim()
+                };
+                
+                // 验证必填字段
+                if (!formData.title) {
+                    showMessage('请填写物品标题', 'danger');
+                    $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>保存修改');
+                    return;
+                }
+                
+                if (!formData.location) {
+                    showMessage('请填写地点', 'danger');
+                    $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>保存修改');
+                    return;
+                }
+                
+                if (!formData.eventTime) {
+                    showMessage('请选择时间', 'danger');
+                    $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>保存修改');
+                    return;
+                }
+                
+                // 提交数据
+                $.ajax({
+                    url: '/items/update',
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            showMessage('修改保存成功！正在跳转到物品详情页...', 'success');
+                            
+                            // 延迟跳转
+                            setTimeout(function() {
+                                window.location.href = '/items/' + $('#itemId').val();
+                            }, 1500);
+                        } else {
+                            showMessage('保存失败：' + response.message, 'danger');
+                            $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>保存修改');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showMessage('请求失败，请稍后重试', 'danger');
+                        $('#submitBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>保存修改');
+                        console.error('保存错误:', error);
+                    }
+                });
+            });
+            
+            // 删除按钮点击事件
+            $('#deleteBtn').on('click', function() {
+                const itemId = $('#itemId').val();
+                
+                if (confirm('确定要删除此物品吗？删除后无法恢复！')) {
+                    $.ajax({
+                        url: '/items/delete',
+                        method: 'POST',
+                        data: { itemId: itemId },
+                        success: function(response) {
+                            if (response.success) {
+                                showMessage('删除成功！正在跳转到列表页...', 'success');
+                                
+                                // 延迟跳转
+                                setTimeout(function() {
+                                    window.location.href = '/items/my';
+                                }, 1500);
+                            } else {
+                                showMessage('删除失败：' + response.message, 'danger');
+                            }
+                        },
+                        error: function() {
+                            showMessage('请求失败，请稍后重试', 'danger');
+                        }
+                    });
+                }
+            });
+            
+            // 显示消息函数
+            function showMessage(message, type) {
+                const $alert = $('#messageAlert');
+                $alert.removeClass('d-none alert-success alert-danger')
+                      .addClass('alert-' + type)
+                      .html('<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + ' me-2"></i>' + message);
+                
+                // 自动隐藏成功消息
+                if (type === 'success') {
+                    setTimeout(function() {
+                        $alert.addClass('d-none');
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
